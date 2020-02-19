@@ -199,7 +199,7 @@ __EOS__
       first_session = nil
       10.times do |i|
         connections = i
-        cctx = OpenSSL::SSL::SSLContext.new
+        cctx = context_new
         cctx.ssl_version = :TLSv1_2
         server_connect_with_session(port, cctx, first_session) { |ssl|
           ssl.puts("abc"); assert_equal "abc\n", ssl.gets
@@ -228,7 +228,7 @@ __EOS__
     ctx_proc = proc { |ctx| ctx.ssl_version = :TLSv1_2 }
     start_server(ctx_proc: ctx_proc) do |port|
       called = {}
-      ctx = OpenSSL::SSL::SSLContext.new
+      ctx = context_new
       ctx.session_cache_mode = OpenSSL::SSL::SSLContext::SESSION_CACHE_CLIENT
       ctx.session_new_cb = lambda { |ary|
         sock, sess = ary
@@ -260,7 +260,7 @@ __EOS__
 
     connections = nil
     called = {}
-    cctx = OpenSSL::SSL::SSLContext.new
+    cctx = context_new
     cctx.ssl_version = :TLSv1_2
     sctx = nil
     ctx_proc = Proc.new { |ctx|
@@ -385,7 +385,7 @@ __EOS__
 
   def server_connect_with_session(port, ctx = nil, sess = nil)
     sock = TCPSocket.new("127.0.0.1", port)
-    ctx ||= OpenSSL::SSL::SSLContext.new
+    ctx ||= context_new
     ssl = OpenSSL::SSL::SSLSocket.new(sock, ctx)
     ssl.session = sess if sess
     ssl.sync_close = true

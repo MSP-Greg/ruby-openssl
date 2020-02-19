@@ -20,7 +20,7 @@ module OpenSSL::SSLPairM
     port = tcps.connect_address.ip_port
 
     th = Thread.new {
-      sctx = OpenSSL::SSL::SSLContext.new
+      sctx = context_new
       sctx.cert = @svr_cert
       sctx.key = @svr_key
       sctx.tmp_dh_callback = proc { OpenSSL::TestUtils::Fixtures.pkey("dh-1") }
@@ -394,7 +394,7 @@ module OpenSSL::TestPairM
   end
 
   def test_connect_accept_nonblock_no_exception
-    ctx2 = OpenSSL::SSL::SSLContext.new
+    ctx2 = context_new
     ctx2.cert = @svr_cert
     ctx2.key = @svr_key
     ctx2.tmp_dh_callback = proc { OpenSSL::TestUtils::Fixtures.pkey("dh-1") }
@@ -405,7 +405,7 @@ module OpenSSL::TestPairM
     accepted = s2.accept_nonblock(exception: false)
     assert_equal :wait_readable, accepted
 
-    ctx1 = OpenSSL::SSL::SSLContext.new
+    ctx1 = context_new
     s1 = OpenSSL::SSL::SSLSocket.new(sock1, ctx1)
     th = Thread.new do
       rets = []
@@ -442,7 +442,7 @@ module OpenSSL::TestPairM
   end
 
   def test_connect_accept_nonblock
-    ctx = OpenSSL::SSL::SSLContext.new
+    ctx = context_new
     ctx.cert = @svr_cert
     ctx.key = @svr_key
     ctx.tmp_dh_callback = proc { OpenSSL::TestUtils::Fixtures.pkey("dh-1") }

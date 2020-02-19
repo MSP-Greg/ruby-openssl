@@ -36,6 +36,20 @@ require "envutil"
 
 if defined?(OpenSSL)
 
+module OpenSSL::CtxNew
+  SECURITY_LEVEL = if ENV['CTX_SECURITY_LEVEL'] && OpenSSL::SSL::SSLContext.new.security_level == 1
+    ENV['CTX_SECURITY_LEVEL'].to_i
+  else
+    nil
+  end
+
+  def context_new
+    ctx = OpenSSL::SSL::SSLContext.new
+    ctx.security_level = SECURITY_LEVEL if SECURITY_LEVEL
+    ctx
+  end
+end
+
 module OpenSSL::TestUtils
   module Fixtures
     module_function
@@ -149,6 +163,7 @@ module OpenSSL::TestUtils
 end
 
 class OpenSSL::TestCase < Test::Unit::TestCase
+  include OpenSSL::CtxNew
   include OpenSSL::TestUtils
   extend OpenSSL::TestUtils
 
@@ -193,7 +208,7 @@ class OpenSSL::SSLTestCase < OpenSSL::TestCase
   end
 
   def tls12_supported?
-    ctx = OpenSSL::SSL::SSLContext.new
+    ctx = context_new
     ctx.min_version = ctx.max_version = OpenSSL::SSL::TLS1_2_VERSION
     true
   rescue
@@ -213,7 +228,7 @@ class OpenSSL::SSLTestCase < OpenSSL::TestCase
       store = OpenSSL::X509::Store.new
       store.add_cert(@ca_cert)
       store.purpose = OpenSSL::X509::PURPOSE_SSL_CLIENT
-      ctx = OpenSSL::SSL::SSLContext.new
+      ctx = context_new
       ctx.cert_store = store
       ctx.cert = @svr_cert
       ctx.key = @svr_key
