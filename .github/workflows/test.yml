@@ -30,7 +30,9 @@ jobs:
       # SSL_DIR is set as needed by MSP-Greg/setup-ruby-pkgs
       # only used with mswin
       - name: compile
-        run:  rake compile -- --enable-debug --without-pkg-config $env:SSL_DIR
+        run:  |
+          where.exe nmake.exe
+          rake compile -- --enable-debug --without-pkg-config $env:SSL_DIR
 
       - name: test
         run:  rake test TESTOPTS="-v --no-show-detail-immediately" OSSL_MDEBUG=1
