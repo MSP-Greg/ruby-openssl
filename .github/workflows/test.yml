@@ -37,17 +37,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ windows-latest ]
-        ruby: [ mswin, mingw, "3.0", "2.7", "2.6" ]
+        os: [ windows-2022, windows-2019 ]
+        ruby: [ mswin, mingw, head, "3.0", "2.7", "2.6" ]
     steps:
       - name: repo checkout
         uses: actions/checkout@v2
 
       - name: load ruby, install/update gcc, install openssl
-        uses: MSP-Greg/setup-ruby-pkgs@v1
+        uses: MSP-Greg/setup-ruby-pkgs@win-ucrt-2
         with:
           ruby-version: ${{ matrix.ruby }}
           mingw: _upgrade_ openssl
+          setup-ruby-ref: MSP-Greg/ruby-setup-ruby/win-ucrt-1
 
       - name: depends
         run:  bundle install
