@@ -131,7 +131,7 @@ jobs:
 
   test-yjit:
     name: >-
-      ${{ matrix.os }} ${{ matrix.ruby }}
+      ${{ matrix.os }} ${{ matrix.ruby }} --yjit
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
