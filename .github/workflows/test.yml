@@ -128,3 +128,32 @@ jobs:
 
       - name: test
         run:  rake test TESTOPTS="-v --no-show-detail-immediately" OSSL_MDEBUG=1
+
+  test-yjit:
+    name: >-
+      ${{ matrix.os }} ${{ matrix.ruby }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-20.04, macos-11 ]
+        ruby: [ head ]
+    steps:
+      - name: repo checkout
+        uses: actions/checkout@v2
+
+      - name: load ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
+      - name: depends
+        run:  bundle install
+
+      - name: compile
+        run:  rake compile -- --enable-debug
+
+      - name: test
+        env:
+          RUBYOPT: --yjit
+        run:  rake test TESTOPTS="-v --no-show-detail-immediately" OSSL_MDEBUG=1
