@@ -29,6 +29,7 @@ jobs:
         include:
           - { os: windows-latest, ruby: ucrt }
           - { os: windows-latest, ruby: mswin }
+          - { os: windows-latest, ruby: mingw }
 
     steps:
       - name: repo checkout
